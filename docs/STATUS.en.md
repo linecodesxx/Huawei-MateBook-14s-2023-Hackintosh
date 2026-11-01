@@ -2,7 +2,7 @@
 
 [Русский](STATUS.md) | **English**
 
-Snapshot as of November 1, 2026, based on previously saved materials. Subsequent local changes may be ahead of this document.
+Snapshot as of November 1, 2026. Later tests and their limitations are documented in the [Recovery investigation](../devlog/2026-11-01-recovery-investigation.en.md).
 
 ## Observed on this laptop
 
@@ -36,7 +36,7 @@ No particular ACPI method, PCI component, CPU topology issue or iGPU fault has b
 
 ## Unresolved questions
 
-- The actual version of the current installer.
-- The exact latest configuration booted after the work in Codex.
+- Exact version of the original Tahoe Recovery; Sequoia Recovery 15.4.1 (24E263) was also used for comparison.
+- Whether the SSDT13 exclusion took effect during the test: no application log was captured. It is disabled in the last checked config.
 - How to obtain the next diagnostically useful result.
 - Hardware compatibility of the chosen graphics stack with the 14s panel.

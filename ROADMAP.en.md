@@ -2,7 +2,7 @@
 
 [Русский](ROADMAP.md) | **English**
 
-Only mark confirmed results as complete.
+Only mark confirmed results as complete. Recent attempts are documented in the [Recovery investigation](devlog/2026-11-01-recovery-investigation.en.md).
 
 ## Completed
 
