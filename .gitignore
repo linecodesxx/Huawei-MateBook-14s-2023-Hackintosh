@@ -1,0 +1,39 @@
+# Local/private material
+/private/
+/raw/
+/downloads/
+/EFI/
+/SysReport/
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+# Raw configs, firmware, dumps and archives are not public by default
+*.plist
+*.aml
+*.bin
+*.rom
+*.dmp
+*.log
+*.ioreg
+*.tar
+*.tar.gz
+*.zip
+*.7z
+acpidump*
+DSDT*
+SSDT*
+# Screenshots may contain identifiers and metadata
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.heic
+*.mp4
+# Local tooling
+.DS_Store
+__pycache__/
+*.pyc
+
