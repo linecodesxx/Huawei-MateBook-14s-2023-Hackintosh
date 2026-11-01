@@ -26,6 +26,14 @@ The DEBUG OpenCore log showed three runtime MMIO descriptors. The previous `0xF9
 
 ## Current state and next step
 
-A working EFI, Recovery GUI and graphics acceleration are **not confirmed**. The SSDT13 exclusion is disabled in the last checked config; Sequoia Recovery is temporarily on the test USB and Tahoe Recovery is saved separately. ACPI changes can also affect other OSes booted through OpenCore: Using the firmware boot menu for Windows and Linux is recommended while an experiment is enabled.
+A working EFI, Recovery GUI and graphics acceleration are **not confirmed**. The SSDT13 exclusion is disabled in the last checked config; Tahoe Recovery 26.6.2 is on the test USB and the previously used Sequoia 15.4.1 is saved separately. ACPI changes can also affect other OSes booted through OpenCore: Using the firmware boot menu for Windows and Linux is recommended while an experiment is enabled.
 
 The next task is to obtain information about execution **after the last visible kernel line**, or design a test with an expected result defined beforehand. The last line on screen does not identify the failing component. `ocvalidate` checks configuration structure, not hardware compatibility. A public EFI release is not ready.
+
+## Update: graphics and USB
+
+- The Tahoe Recovery version was identified from `SystemVersion.plist` as **26.6.2, 25G83**.
+- Experimental WhateverXe 0.6.1 was tested for GPU `8086:a7a0` after disabling WhateverGreen and removing `-igfxvesa`; Recovery still stalled. The log confirms the boot arguments but does not show whether the kext loaded. This does not identify the cause: Tahoe 26.6.2 is outside the stated WhateverXe versions, and the separate graphics package was not installed.
+- `UTBDefault.kext` is a generic pre-mapping configuration, not a port map for this laptop. Linux sees the boot USB at `00:14.0` over SuperSpeed; access to that port at the macOS kernel stage is unconfirmed.
+- We decided to try **Sequoia 15.8**, which is listed among the compatible WhateverXe versions. A successful Recovery boot and graphics acceleration remain unconfirmed.
+- Raptor Lake-H/P/U is in the [WhateverXe device list](https://github.com/b00t0x/WhateverXe/blob/main/docs/device-selection.md), but support is not validated on this laptop and internal display support is experimental.
