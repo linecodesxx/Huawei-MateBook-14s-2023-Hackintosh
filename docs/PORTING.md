@@ -1,5 +1,7 @@
 # План переноса D16 → MateBook 14s 2023
 
+**Русский** | [English](PORTING.en.md)
+
 ## Решение
 
 Создаём собственную EFI. Используем Huawei-слой D16 и согласованную базу X1/NootedGreen. Не копируем donor config целиком.

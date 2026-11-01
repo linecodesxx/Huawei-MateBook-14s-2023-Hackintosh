@@ -1,8 +1,10 @@
 ---
-name: Boot experiment
+name: "1. Эксперимент загрузки (Русский)"
 about: Один воспроизводимый эксперимент загрузки без приватных данных
 title: "[Boot] "
 ---
+
+**Русский** | [English](https://github.com/linecodesxx/Huawei-MateBook-14s-2023-Hackintosh/blob/main/.github/ISSUE_TEMPLATE/boot-experiment.en.md)
 
 ## Изменение и гипотеза
 

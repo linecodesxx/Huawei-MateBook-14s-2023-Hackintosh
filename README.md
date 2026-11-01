@@ -1,74 +1,78 @@
-# Huawei MateBook 14s 2023 — Hackintosh research log
+# Huawei MateBook 14s 2023 — журнал исследования Hackintosh
 
-**English** | [Русский](README.ru.md)
+**Русский** | [English](README.en.md)
 
-**i7-13700H · Intel Iris Xe A7A0 · OpenCore · work in progress**
+**i7-13700H · Intel Iris Xe A7A0 · OpenCore · в разработке**
 
-An experimental, public research journal for bringing macOS to the Huawei MateBook 14s 2023 (HKFG-XX). Hardware notes, a D16-based porting plan and reproducible boot experiments. **No working EFI release or graphics acceleration on this machine has been demonstrated.**
+Открытый экспериментальный журнал запуска macOS на Huawei MateBook 14s 2023 (HKFG-XX): сведения о железе, план переноса с D16 и воспроизводимые эксперименты загрузки. **Рабочая EFI и графическое ускорение на этом ноутбуке пока не подтверждены.**
 
-## About this project
+## Что здесь происходит
 
-This project investigates booting macOS on a MateBook 14s 2023 with an Intel Core i7-13700H. It records verified observations, adaptation plans, individual boot results and unsuccessful attempts.
+Исследую запуск macOS на MateBook 14s 2023 с Intel Core i7-13700H. Здесь собираются проверенные наблюдения, планы адаптации, результаты отдельных загрузок и разбор неудачных попыток.
 
-The goal is to progress from kernel startup to the installer, then test Metal, peripherals and stability. An EFI will only be described as working after it has been tested on this laptop.
+Задача — пройти путь от запуска ядра к установщику, затем проверить Metal, периферию и стабильность. Рабочую EFI будем называть рабочей только после проверки на этом ноутбуке.
 
-**Last updated: November 1, 2026.**
+**Обновлено: 1 ноября 2026 года.**
 
-## Current status
+## Текущий статус
 
-| Stage | Status | Evidence |
+| Этап | Состояние | Основание |
 |---|---|---|
-| OpenCore hands control to macOS | Observed | Kernel messages are visible in the latest boot photo |
-| Kernel starts early services | Observed | AppleKeyStore, CoreAnalyticsHub |
-| ACPI table loading | Success reported | Warnings are followed by ACPI AML tables successfully acquired and loaded |
-| Further boot progress | Output stops; cause unknown | Last visible line: pci (build ...), flags ... |
-| Installer / desktop | Unconfirmed | No successful boot has been recorded |
-| Metal on this 14s | Untested | Results from other laptops are not results for this project |
-| Audio, touchpad, brightness, sleep | Untested in macOS | Early boot must be resolved first |
+| OpenCore передаёт управление macOS | Наблюдалось | На последнем снимке видны сообщения ядра |
+| Ядро запускает ранние службы | Наблюдалось | AppleKeyStore, CoreAnalyticsHub |
+| Загрузка ACPI-таблиц | Сообщается об успехе | После предупреждений выводится ACPI AML tables successfully acquired and loaded |
+| Дальнейшая загрузка | Остановка вывода, причина неизвестна | Последняя видимая строка — pci (build ...), flags ... |
+| Установщик / рабочий стол | Не подтверждено | Нет зафиксированной успешной загрузки |
+| Metal на этом 14s | Не проверено | Успехи других ноутбуков не считаются результатом этого проекта |
+| Звук, тачпад, яркость, сон | Не проверено в macOS | Сначала нужно пройти раннюю загрузку |
 
-The latest attempt has already passed EXITBS. The PCI banner alone does not prove a PCI problem; the last log line does not necessarily identify the cause.
+Последняя попытка уже прошла EXITBS. PCI-баннер сам по себе не доказывает проблему PCI; последняя строка журнала не обязательно обозначает виновника.
 
-## Why use the D16 as a donor?
+## Почему выбран донор D16
 
-The Huawei MateBook D16 2024 uses the same SN6140 audio codec. The EC/keyboard paths and Fn method assignments confirmed in our 14s DSDT also match the D16 approach. However, the GPU, display panel and touchpad differ.
+У Huawei MateBook D16 2024 совпадает аудиокодек SN6140. В DSDT нашего 14s также подтверждены пути EC/клавиатуры и назначение Fn-методов, соответствующие подходу D16. Но GPU, панель и тачпад отличаются.
 
-The D16 configuration builds on the X1 Carbon Gen 11 project. In the snapshots examined, its Booter settings, CPUID configuration and main Kernel Quirks match the archived 14s configuration. Simply replacing the configuration is therefore not an established fix for the current stall.
+D16 построен поверх X1 Carbon Gen 11. В изученных снимках Booter, CPUID и основные Kernel Quirks D16 совпадают с архивной конфигурацией 14s. Поэтому простая замена конфига не считается исправлением текущей остановки.
 
-## Documentation
+## Навигация
 
-The detailed notes linked below are currently primarily in Russian. The [Russian README](README.ru.md) provides the same project overview.
+Русский — основной язык документации. Для каждого документа и шаблона есть английская версия; переключатель языка расположен в начале файла.
 
-- [Hardware](docs/HARDWARE.md)
-- [Facts, hypotheses and unknowns](docs/STATUS.md)
-- [Porting plan](docs/PORTING.md)
-- [Roadmap](ROADMAP.md)
-- [First devlog: what we know so far](devlog/2026-11-01-start.md)
-- [Boot experiment template](experiments/TEMPLATE.md)
-- [References and acknowledgements](docs/REFERENCES.md)
-- [Publication rules and identifier protection](PRIVACY.md)
-- [How to maintain the journal](CONTRIBUTING.md)
+- [Железо](docs/HARDWARE.md)
+- [Факты, гипотезы и неизвестное](docs/STATUS.md)
+- [План переноса](docs/PORTING.md)
+- [План работ](ROADMAP.md)
+- [Первый devlog: что уже известно](devlog/2026-11-01-start.md)
+- [Шаблон отчёта о загрузке](experiments/TEMPLATE.md)
+- [Источники и благодарности](docs/REFERENCES.md)
+- [Правила публикации и защита идентификаторов](PRIVACY.md)
+- [Как вести журнал](CONTRIBUTING.md)
 
-## Published materials and privacy
+- [Все записи devlog](devlog/README.md)
+- [Шаблоны Issues](.github/ISSUE_TEMPLATE/)
 
-The initial publication contains documentation and a publication checker. Original EFI configurations, PlatformInfo/SMBIOS data, firmware dumps, hardware reports, screen photos and raw logs are excluded.
+## Материалы и приватность
 
-Before each commit:
+В начальном коммите публикуется документация и инструмент проверки. Исходные EFI, PlatformInfo/SMBIOS, дампы прошивки, аппаратные отчёты, фотографии экрана и необработанные логи не загружаются.
+
+Перед каждым коммитом:
 
 ```sh
 python3 scripts/check_publication.py
 python3 -m unittest discover -s tests -v
 ```
 
-To enable the local pre-commit hook:
+Для локального pre-commit hook:
 
 ```sh
 git config core.hooksPath .githooks
 ```
 
-The checker reduces the risk of leaks but does not replace reviewing the diff and history. It does not scan issue attachments, external links or photo metadata. Web and API edits bypass the local hook and require separate review.
+Проверка снижает риск утечки, но не заменяет просмотр diff и истории. Она не сканирует вложения Issues, внешние ссылки или метаданные фотографий. Изменения через web editor и API обходят локальный hook и требуют отдельной проверки.
 
-## Contributing
+## Для участников
 
-Reproducible reports for the HKFG-XX/i7-13700H, ACPI analysis and hardware comparisons are welcome. Remove unique identifiers before publishing. Do not attach complete dumps or configurations.
+Полезны воспроизводимые отчёты именно о HKFG-XX/i7-13700H, разбор ACPI и сравнение аппаратных параметров. Перед публикацией удаляйте уникальные идентификаторы. Не прикладывайте полные дампы и конфиги.
 
-This repository is not affiliated with Apple, Huawei or Intel. The initial publication includes no third-party code or binary drivers; their rights remain with their respective authors.
+Этот репозиторий не связан с Apple, Huawei или Intel. Сторонний код и бинарные драйверы в начальную публикацию не включены; права на них остаются у соответствующих авторов.
+

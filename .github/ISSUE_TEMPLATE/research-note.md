@@ -1,8 +1,10 @@
 ---
-name: Research note
+name: "1. Исследовательская заметка (Русский)"
 about: Источник, аппаратное отличие или проверяемая гипотеза
 title: "[Research] "
 ---
+
+**Русский** | [English](https://github.com/linecodesxx/Huawei-MateBook-14s-2023-Hackintosh/blob/main/.github/ISSUE_TEMPLATE/research-note.en.md)
 
 ## Наблюдение или вопрос
 
