@@ -1,0 +1,86 @@
+{
+  "updated": "2026-11-05",
+  "hardware": {
+    "model": "Huawei MateBook 14s 2023 HKFG-X / HKFG-XX",
+    "cpu": "Intel Core i7-13700H; 14 cores, 20 logical threads",
+    "gpu": "Intel Iris Xe 8086:a7a0",
+    "keyboard": "PS/2 MSFT0001 / PNP0303",
+    "touchpad": "Synaptics S9801 06CB:CEAD; I2C0 8086:51e8"
+  },
+  "software": {
+    "macOS": "Sequoia Recovery 15.8 [24H23]",
+    "kernel": "Darwin 24.6.0 / xnu-11417.140.69.712.69",
+    "OpenCore": "1.0.8",
+    "Lilu": "1.7.3",
+    "VirtualSMC": "1.3.9",
+    "observer": "BSDSnapshot 0.4.0"
+  },
+  "confirmed": {
+    "graphical_recovery": "Disk Utility reached",
+    "built_in_keyboard": "working, user confirmed",
+    "built_in_touchpad": "working, user confirmed in polling mode",
+    "cpu_limit_during_confirmed_boot": "cpus=1",
+    "confirmed_private_config_sha256": "58be65505a2605c0a9697cbc61518ee7f0b96214d77c220af66ed3049f40fe69"
+  },
+  "current_usb": {
+    "change": "Removed only cpus=1 after saving known-good EFI; no other configuration change",
+    "logical_threads_enabled": 20,
+    "hardware_boot_result": "pending",
+    "private_config_sha256": "5663505b6e512d52df357e395f7fba945e953d6788af74fb2e867291665d04af",
+    "boot_args": "-v keepsyms=1 debug=0x144 -disablegfxfirmware -wex-noaccel -dbgenhiolog startup_debug=1 -vi2c-force-polling",
+    "validation": "ocvalidate 1.0.8 passed; all 117 EFI files read back and hash-verified; USB unmounted"
+  },
+  "essential_settings": {
+    "Booter.SetupVirtualMap": false,
+    "Booter.DevirtualiseMmio": false,
+    "Kernel.AppleXcpmCfgLock": true,
+    "Kernel.AppleXcpmExtraMsrs": true,
+    "Kernel.ProvideCurrentCpuInfo": true,
+    "Kernel.DisableIoMapper": true,
+    "Kernel.DisableLinkeditJettison": true,
+    "Kernel.Cpuid1Data_hex": "55060a00000080000000000000000000",
+    "Kernel.Cpuid1Mask_hex": "ffffffff0000ff000000000000000000",
+    "SMBIOS_model": "MacBookPro16,2",
+    "enabled_acpi": [
+      "SSDT-RTCAWAC.aml",
+      "SSDT-CPU20-ALT.aml",
+      "SSDT-EC-HUAWEI.aml",
+      "SSDT-HW-INPUT.aml"
+    ],
+    "user_kernel_patches_enabled": false,
+    "temporary_UUID_wait_bypass_enabled": false,
+    "graphics_extensions_enabled": false,
+    "USBToolBox_and_UTBDefault_enabled": false
+  },
+  "ec_fix": {
+    "firmware_device": "\\_SB.PC00.LPCB.HWEC (PNP0C09), retained",
+    "compatibility_device": "\\_SB.PC00.LPCB.EC (ACID0001), Darwin only",
+    "effect": "Unblocked literal EC wait in TypeCBPC probe and allowed native IOResources matching/UUID wait to finish"
+  },
+  "input_fix": {
+    "VoodooPS2Controller": "official 2.3.7, keyboard plugin enabled",
+    "VoodooI2C_main_source_commit": "6be653a2d2234ac1f7464ebf12716314975c3920",
+    "main_source_modified": false,
+    "personality": "Upstream Alder Lake controller narrowed to actual PCI 0x51e88086",
+    "dependencies": "official VoodooI2C 2.9.1 Services/GPIO/HID; VoodooInput 1.1.6; shipped GPIO 1.1 ABI headers",
+    "touchpad_acpi": "Darwin-only I2C0.TPDX, native HID, address 0x15, 400 kHz, descriptor register 0x20; polling",
+    "power_patch": {
+      "table": "DSDT",
+      "length": 628265,
+      "count": 1,
+      "find_hex": "14105f50533300534f4433494330300101",
+      "replace_hex": "14105850533300534f4433494330300101",
+      "purpose": "Rename only native I2C0 _PS3 to XPS3; Darwin wrapper preserves BAR0"
+    },
+    "global_OSI_rename": false,
+    "GPIO_writes_added": false
+  },
+  "limits": [
+    "20-thread Recovery boot not yet observed after the CPU-limit removal",
+    "GPU acceleration / Metal not verified",
+    "Network, sound, battery, brightness and sleep not verified",
+    "Touchscreen, gestures and interrupt-mode touchpad not verified",
+    "Installed-system boot not verified; no installation or formatting performed"
+  ],
+  "publication_scope": "Concise technical record and authored ACPI sources; local private EFI and full detailed archive retained separately. Settings are hardware/firmware-specific research data, not a ready-to-boot EFI."
+}

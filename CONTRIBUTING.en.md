@@ -45,4 +45,6 @@ git config core.hooksPath .githooks
 
 The GitHub web editor and API changes bypass the local hook. Review their contents separately. Do not attach original EFI folders/dumps to issues: use sanitized minimal excerpts.
 
+Maintain the concise [results summary](devlog/2026-11-05-recovery-and-input.en.md) and [essential JSON settings](docs/recovery-settings.json), reviewing them manually against the [privacy rules](PRIVACY.en.md). Publish only substantial observations and our own ACPI patches; keep the complete experiment archive and historical configurations local. Record the source and transformation and leave identifiers empty. Do not include working plist files, binary builds, native DSDT, complete EFI folders or photographs. Shared GUID exceptions are listed in the rules; do not exempt other UUIDs. Passing publication checks does not mean boot testing passed.
+
 For third-party patches, include the source, commit and license.

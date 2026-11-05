@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check Git index contents for common identifiers; never print matched values."""
 from __future__ import annotations
+import json
 import re
 import subprocess
 import sys
@@ -12,6 +13,18 @@ BLOCKED_SUFFIXES = (
     ".webp", ".heic", ".mp4", ".pem", ".key", ".p12", ".pfx",
 )
 BLOCKED_PARTS = {"private", "raw", "downloads", "efi", "sysreport"}
+# Shared protocol/type constants, never device, volume or attachment identities.
+# Sources and purposes are documented in PRIVACY.md / PRIVACY.en.md.
+PUBLIC_GUIDS = {
+    "7C436110-AB2A-4BBB-A880-FE41995C9F82",  # Apple boot NVRAM namespace.
+    "4D1EDE05-38C7-4A6A-9CC6-4BCCA8B38C14",  # Apple vendor NVRAM namespace.
+    "4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102",  # OpenCore vendor NVRAM namespace.
+    "8BE4DF61-93CA-11D2-AA0D-00E098032B8C",  # UEFI global-variable namespace.
+    "3CDFF6F7-4267-4555-AD05-B30A3D8938DE",  # HID-over-I2C ACPI _DSM interface.
+    "4C616265-6C00-11AA-AA11-00306543ECAC",  # Apple Label partition type.
+    "0516B563-B15B-11DA-96EB-0014519758EF",  # AppleMultitouch IOCFPlugInTypes interface.
+    "00000000-0000-0000-0000-000000000000",  # Nil UUID: absence of an identifier.
+}
 PATTERNS = {
     "UUID": re.compile(r"(?i)\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b"),
     "MAC address": re.compile(r"(?i)(?<![0-9a-f])(?:[0-9a-f]{2}[:-]){5}[0-9a-f]{2}(?![0-9a-f])"),
@@ -23,12 +36,48 @@ PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:[A-Z0-9]+ )?PRIVATE KEY-----"),
     "SSH public key identifier": re.compile(r"\bssh-(?:ed25519|rsa)\s+[A-Za-z0-9+/]{30,}"),
 }
+IDENTIFIER_FIELDS = {
+    "SystemSerialNumber", "SystemUUID", "MLB", "ROM", "SerialNumber",
+    "SSID", "BSSID", "IOPlatformSerialNumber", "IOPlatformUUID",
+    "HardwareUUID", "BoardSerialNumber", "ChassisSerialNumber",
+}
+_IDENTIFIER_NAMES = "|".join(sorted(IDENTIFIER_FIELDS))
 IDENTIFIER_ASSIGNMENT = re.compile(
-    r'(?im)\b(?:SystemSerialNumber|SystemUUID|MLB|ROM|SerialNumber|'
-    r'SSID|BSSID|IOPlatformSerialNumber)\b["\x27]?\s*[:=]\s*'
-    r'["\x27]?([^\s"\x27,;<>]+)'
+    r'(?im)\b(?:' + _IDENTIFIER_NAMES + r')\b["\x27]?\s*[:=]\s*'
+    r'(?:"(?P<double>(?:\\.|[^"\\])*)"|'
+    r"'(?P<single>(?:\\.|[^'\\])*)'|"
+    r'(?P<bare>[^\s"\x27,;<>]+))'
 )
 PLACEHOLDERS = {"redacted", "removed", "placeholder", "none", "null", "empty", "-", "xxx"}
+
+def inspect_json(text: str) -> tuple[bool, set[str]]:
+    """Inspect parsed values, including escapes and duplicate assignments."""
+    found = False
+    fields = {name.casefold() for name in IDENTIFIER_FIELDS}
+    strings = set()
+
+    def collect_strings(value: object) -> None:
+        if isinstance(value, str):
+            strings.add(value)
+        elif isinstance(value, dict):
+            for key, item in value.items():
+                collect_strings(key)
+                collect_strings(item)
+        elif isinstance(value, list):
+            for item in value:
+                collect_strings(item)
+
+    def inspect_object(pairs: list[tuple[str, object]]) -> dict:
+        nonlocal found
+        for key, value in pairs:
+            if key.casefold() in fields and value not in ("", None, [], {}):
+                found = True
+            collect_strings(key)
+            collect_strings(value)
+        return dict(pairs)
+
+    collect_strings(json.loads(text, object_pairs_hook=inspect_object))
+    return found, strings
 
 def inspect_blob(name: str, data: bytes) -> list[str]:
     path = PurePosixPath(name)
@@ -43,13 +92,30 @@ def inspect_blob(name: str, data: bytes) -> list[str]:
         return problems + ["non-UTF-8/binary file"]
     if "\x00" in text:
         problems.append("binary content")
+    scan_texts = [text]
+    assignment_texts = [text]
+    if path.suffix.lower() == ".json":
+        try:
+            has_identifier, decoded_strings = inspect_json(text)
+            if has_identifier:
+                problems.append("identifier assignment")
+            scan_texts.extend(decoded_strings)
+            assignment_texts = decoded_strings
+        except (ValueError, RecursionError):
+            problems.append("invalid JSON")
     for label, pattern in PATTERNS.items():
-        if pattern.search(text):
+        if any(label != "UUID" or match.group().upper() not in PUBLIC_GUIDS
+               for item in scan_texts for match in pattern.finditer(item)):
             problems.append(label)
-    for match in IDENTIFIER_ASSIGNMENT.finditer(text):
-        if match.group(1).lower() not in PLACEHOLDERS:
-            problems.append("identifier assignment")
-            break
+    if "identifier assignment" not in problems:
+        for item in assignment_texts:
+            for match in IDENTIFIER_ASSIGNMENT.finditer(item):
+                value = next(group for group in match.groups() if group is not None)
+                if value and value.lower() not in PLACEHOLDERS:
+                    problems.append("identifier assignment")
+                    break
+            if "identifier assignment" in problems:
+                break
     return problems
 
 def indexed_files() -> list[str]:

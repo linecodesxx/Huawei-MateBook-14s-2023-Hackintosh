@@ -37,3 +37,7 @@ SSDT*
 __pycache__/
 *.pyc
 
+# Reviewed authored ACPI source; firmware dumps and compiled AML remain excluded
+!patches/SSDT-CPU20-ALT.dsl
+!patches/SSDT-EC-HUAWEI.dsl
+!patches/SSDT-HW-INPUT.dsl
